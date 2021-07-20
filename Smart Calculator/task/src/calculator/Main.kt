@@ -94,9 +94,7 @@ class Processor {
         val stack = Stack<String>()
         val postfixMap = mutableMapOf<Int, String>()
         var i = 0
-        var isOK: Boolean
         inputMap.forEach { (_, u) ->
-            isOK = false
             when {
                 elementLevel(u) < 0 -> postfixMap[i++] = u
                 u == "(" -> stack.push(u)
@@ -146,7 +144,7 @@ class Processor {
     fun help() =
         println("The program calculates the sum of numbers.\n" +
                 "You can also use any sign of the arithmetic operation.\n" +
-                "You can use variables.")
+                "You can use variables and parentheses..")
 
     fun exit() =
         println("Bye!")
