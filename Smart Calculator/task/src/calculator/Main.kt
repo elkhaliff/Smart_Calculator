@@ -1,7 +1,7 @@
 package calculator
 
 import java.util.*
-import kotlin.math.pow
+import java.math.BigInteger
 
 class Processor {
     val patternOperator = """([-+*/^()])""".toRegex()
@@ -10,12 +10,12 @@ class Processor {
     private val patternVariables = """([a-zA-Z]+)\s*([=])\s*(-?\d+)\s*""".toRegex()
     private val patternVariablesFor = """([a-zA-Z]+)\s*([=])\s*([a-zA-Z]+)\s*""".toRegex()
 
-    private val unknownVariable = "Unknown variable"
+    val unknownVariable = "Unknown variable"
     val invalidIdentifier = "Invalid identifier"
     private val invalidAssignment = "Invalid assignment"
     val invalidExpression = "Invalid expression"
 
-    private val variables: MutableMap<String, Int> = mutableMapOf()
+    private val variables: MutableMap<String, BigInteger> = mutableMapOf()
 
     private fun isBase(input: String) = patternBase.containsMatchIn(input)
     private fun isValue(input: String) = patternValue.containsMatchIn(input)
@@ -40,7 +40,7 @@ class Processor {
 
     fun getValue(element: String) =
         try {
-            element.toInt()
+            BigInteger(element)
         } catch (e: Exception) {
             variables[element]!!
         }
@@ -52,7 +52,7 @@ class Processor {
                 matches.forEach { matchResult ->
                     val variable = matchResult.groupValues[1]
                     val value = matchResult.groupValues[3]
-                    variables[variable] = value.toInt()
+                    variables[variable] = BigInteger(value)
                 }
             }
             isVariablesFor(input) -> {
@@ -120,8 +120,8 @@ class Processor {
         return postfixMap
     }
 
-    fun evaluatePostfix(exp: MutableMap<Int, String>): Int {
-        val stack = Stack<Int>()
+    fun evaluatePostfix(exp: MutableMap<Int, String>): BigInteger {
+        val stack = Stack<BigInteger>()
 
         for ((_, u) in exp) {
             if (elementLevel(u) < 0) {
@@ -134,7 +134,7 @@ class Processor {
                     "-" -> stack.push(val2 - val1)
                     "/" -> stack.push(val2 / val1)
                     "*" -> stack.push(val2 * val1)
-                    "^" -> stack.push(val2.toDouble().pow(val1).toInt())
+                    "^" -> stack.push(val2.pow(val1.toInt()))
                 }
             }
         }
@@ -172,7 +172,7 @@ fun main() {
                         try {
                             println(proc.getValue(input))
                         } catch (e: Exception) {
-                            println(proc.invalidExpression)
+                            println(proc.unknownVariable)
                         }
                     else {
                         val postfix = proc.infixToPostfix(input)
